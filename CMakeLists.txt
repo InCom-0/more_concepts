@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.17)
+
+if(DEFINED PROJECT_NAME)
+  set(MORECONC_IS_SUBPROJECT ON)
+endif()
+
 set(MORE_CONCEPTS_VERSION 0.1.1)
 project(MoreConcepts VERSION "${MORE_CONCEPTS_VERSION}")
 
@@ -17,32 +22,34 @@ target_include_directories(more_concepts INTERFACE
 	$<INSTALL_INTERFACE:include>
 )
 
-install(TARGETS more_concepts
-	EXPORT MoreConceptsTargets
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-	RUNTIME DESTINATION bin
-	INCLUDES DESTINATION include
-)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION .)
-install(EXPORT MoreConceptsTargets
-	FILE MoreConceptsTargets.cmake
-	NAMESPACE more_concepts::
-	DESTINATION lib/cmake
-)
+if(NOT MORECONC_IS_SUBPROJECT)
+	install(TARGETS more_concepts
+		EXPORT MoreConceptsTargets
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		RUNTIME DESTINATION bin
+		INCLUDES DESTINATION include
+	)
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION .)
+	install(EXPORT MoreConceptsTargets
+		FILE MoreConceptsTargets.cmake
+		NAMESPACE more_concepts::
+		DESTINATION lib/cmake
+	)
 
-include(CMakePackageConfigHelpers)
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
-	"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfig.cmake"
-	INSTALL_DESTINATION .
-)
-write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfigVersion.cmake"
-	VERSION ${MORE_CONCEPTS_VERSION}
-	COMPATIBILITY AnyNewerVersion
-)
-install(FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfig.cmake"
-	"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfigVersion.cmake"
-	DESTINATION .
-)
+	include(CMakePackageConfigHelpers)
+	configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+		"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfig.cmake"
+		INSTALL_DESTINATION .
+	)
+	write_basic_package_version_file(
+		"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfigVersion.cmake"
+		VERSION ${MORE_CONCEPTS_VERSION}
+		COMPATIBILITY AnyNewerVersion
+	)
+	install(FILES
+		"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfig.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/MoreConceptsConfigVersion.cmake"
+		DESTINATION .
+	)
+endif()
